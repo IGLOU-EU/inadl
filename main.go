@@ -3,7 +3,11 @@ package main
 import (
 	"fmt"
 	"image"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -18,8 +22,8 @@ import (
 
 type Config struct {
 	url  string
+	name string
 	path fyne.ListableURI
-	icon fyne.Resource
 }
 
 const (
@@ -28,6 +32,8 @@ const (
 	programName string = "INA video backup"
 	programBy   string = "Open-source software by Iglou.eu"
 )
+
+var config Config
 
 func main() {
 	var video ina.MRSS
@@ -39,7 +45,7 @@ func main() {
 
 	w := a.NewWindow(programName)
 	w.CenterOnScreen()
-	w.Resize(fyne.NewSize(1000, 700))
+	w.Resize(fyne.NewSize(1000, 600))
 
 	// Core section
 	var cCoreImageData image.Image
@@ -49,15 +55,35 @@ func main() {
 	cCoreImage.SetMinSize(fyne.NewSize(300, 300))
 
 	var wCoreQualSelect *widget.Select
-	wCoreQualSelect = widget.NewSelect(nil, func(s string) { fmt.Println(s) })
+	wCoreQualSelect = widget.NewSelect(nil, func(s string) {
+		config.url = s
+	})
 	wCoreQualSelect.PlaceHolder = "Meilleure qualité possible"
 
 	var wCoreDownload *widget.Button
 	wCoreDownload = widget.NewButton(
 		"Télécharger",
 		func() {
-			wCoreDownload.Text = "En cours ..."
+			if config.path == nil {
+				dialog.NewError(fmt.Errorf("Vous n'avez pas sélectionné d'emplacement de sauvegarde"), w).Show()
+				return
+			}
+
+			if config.url == "" {
+				dialog.NewError(fmt.Errorf("Vous n'avez pas sélectionné de qualité ou la vidéo n'est pas disponible au téléchargement"), w).Show()
+				return
+			}
+
+			wCoreDownload.Text = "Téléchargement en cour ..."
 			wCoreDownload.Disable()
+			wCoreDownload.Refresh()
+
+			if err := download(config.fileName(), config.url, config.path.Path()); err != nil {
+				dialog.NewError(fmt.Errorf("Une erreur c'est produite pendant la tentative de téléchargement\n%s", err), w).Show()
+			}
+
+			wCoreDownload.Text = "Télécharger"
+			wCoreDownload.Enable()
 			wCoreDownload.Refresh()
 		},
 	)
@@ -69,7 +95,20 @@ func main() {
 	cCoreOption := container.NewVBox(wCoreQualSelect, wCoreDownload)
 	cCoreContent := container.New(
 		layout.NewFormLayout(),
-		widget.NewCard("", "", fyne.NewContainerWithLayout(layout.NewBorderLayout(nil, cCoreOption, nil, nil), cCoreOption, cCoreImage)),
+		widget.NewCard(
+			"",
+			"",
+			fyne.NewContainerWithLayout(
+				layout.NewBorderLayout(
+					nil,
+					cCoreOption,
+					nil,
+					nil,
+				),
+				cCoreOption,
+				cCoreImage,
+			),
+		),
 		wCoreDescBox,
 	)
 
@@ -125,12 +164,19 @@ func main() {
 
 		if video.Channel.Item.Content.Hq.URL != "" {
 			qlSet = append(qlSet, "Haute qualité")
+			config.url = video.Channel.Item.Content.Hq.URL
 		}
 		if video.Channel.Item.Content.Mq.URL != "" {
 			qlSet = append(qlSet, "Moyenne qualité")
+			if config.url == "" {
+				config.url = video.Channel.Item.Content.Mq.URL
+			}
 		}
 		if video.Channel.Item.Content.Bq.URL != "" {
 			qlSet = append(qlSet, "Basse qualité")
+			if config.url == "" {
+				config.url = video.Channel.Item.Content.Bq.URL
+			}
 		}
 
 		if qlSet == nil {
@@ -142,6 +188,8 @@ func main() {
 		}
 
 		// Set informations
+		config.name = video.Channel.Title
+
 		if video.Channel.Description == "" {
 			video.Channel.Description = "<Pas de description disponible>"
 		}
@@ -217,4 +265,36 @@ func main() {
 
 	w.SetMaster()
 	w.ShowAndRun()
+}
+
+func (c Config) fileName() string {
+	var ext string
+
+	s := strings.Split(c.url, ".")
+	l := len(s)
+
+	if l > 0 {
+		ext = s[l-1]
+	} else {
+		ext = "mp4"
+	}
+
+	return fmt.Sprintf("%s.%s", c.name, ext)
+}
+
+func download(name, url, path string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	out, err := os.Create(filepath.Join(path, name))
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
