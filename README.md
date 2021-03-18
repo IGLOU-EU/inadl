@@ -1,7 +1,6 @@
 # ![icon](media/icon.png) Ina backup tool (inadl)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![PkgGoDev](https://pkg.go.dev/badge/git.iglou.eu/adrien/inadl@v0.0.1)](https://pkg.go.dev/git.iglou.eu/adrien/inadl@v0.0.1)
 [![Go Report Card](https://goreportcard.com/badge/git.iglou.eu/adrien/inadl)](https://goreportcard.com/report/git.iglou.eu/adrien/inadl)
 
 > Ina backup tool is written in Go   
@@ -31,7 +30,7 @@ https://git.iglou.eu/adrien/inadl/releases
 **Or**
 
 Install with Go:   
- `go install git.iglou.eu/adrien/inadl`
+ `go install git.iglou.eu/adrien/inadl@latest`
 
 :interrobang: **FAQ** 
 ---
@@ -47,7 +46,7 @@ Install with Go:
 * Ina.fr don't provide any possibility for a local usage of there video
 * The content of Ina.fr is historical and made with the French population taxes
 
-:shipit: **DISCLAIMER** 
+:blowfish: **DISCLAIMER** 
 -------
 This program is for personal use only. You alone have the responsability for any usage which could be against Ina.fr privacy policy.
 
