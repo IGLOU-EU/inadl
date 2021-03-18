@@ -20,6 +20,7 @@ import (
 	"git.iglou.eu/adrien/inadl/ina"
 )
 
+// Config is a config struct ...
 type Config struct {
 	url  string
 	name string
@@ -118,12 +119,12 @@ func main() {
 	wCoreBox := container.NewMax(cCoreLoad)
 
 	// Header section
-	wHeadUrlLabel := widget.NewLabel("Collez votre url ina.fr: ")
-	wHeadUrlLabel.TextStyle.Bold = true
-	wHeadUrlEntry := widget.NewEntry()
-	wHeadUrlEntry.PlaceHolder = "https://www.ina.fr/video/PUB232175070/playstation-lancement-video.html"
-	wHeadUrlEntry.TextStyle.Monospace = true
-	wHeadUrlEntry.OnChanged = func(s string) {
+	wHeadURLLabel := widget.NewLabel("Collez votre url ina.fr: ")
+	wHeadURLLabel.TextStyle.Bold = true
+	wHeadURLEntry := widget.NewEntry()
+	wHeadURLEntry.PlaceHolder = "https://www.ina.fr/video/PUB232175070/playstation-lancement-video.html"
+	wHeadURLEntry.TextStyle.Monospace = true
+	wHeadURLEntry.OnChanged = func(s string) {
 		// Reset
 		wCoreBox.Objects = nil
 		wCoreBox.Add(cCoreLoad)
@@ -237,8 +238,8 @@ func main() {
 
 	cHead := container.New(
 		layout.NewFormLayout(),
-		container.NewVBox(wHeadUrlLabel, wHeadDirLabel),
-		container.NewVBox(wHeadUrlEntry, wHeadDirSelect),
+		container.NewVBox(wHeadURLLabel, wHeadDirLabel),
+		container.NewVBox(wHeadURLEntry, wHeadDirSelect),
 	)
 	wHeadBox := widget.NewCard("Outil de sauvegarde ina.fr", "", cHead)
 
