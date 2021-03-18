@@ -142,8 +142,9 @@ func main() {
 		}
 
 		// Get/Set image
-		if len(video.Channel.Item.Content.Thumbnail) > 0 {
-			resp, err := http.Get(video.Channel.Item.Content.Thumbnail[0].URL)
+		tnLen := len(video.Channel.Item.Content.Thumbnail)
+		if tnLen > 0 {
+			resp, err := http.Get(video.Channel.Item.Content.Thumbnail[tnLen-1].URL)
 			if err != nil {
 				wCoreLoading.SetText("Impossible de recuperer l'image")
 				return
