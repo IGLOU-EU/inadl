@@ -30,7 +30,13 @@ https://git.iglou.eu/adrien/inadl/releases
 **Or**
 
 Install with Go:   
- `go install git.iglou.eu/adrien/inadl@latest`
+ `go get -v git.iglou.eu/adrien/inadl@latest`
+
+Build on Windows:
+```bash
+windres -o main-res.syso windows/main.rc
+go build .
+```
 
 :interrobang: **FAQ** 
 ---
