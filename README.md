@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/git.iglou.eu/adrien/inadl)](https://goreportcard.com/report/git.iglou.eu/adrien/inadl)
 
 > Ina backup tool is written in Go   
-Current version **0.0.1** (03/2021)
+Current version **0.0.2** (03/2021)
 
 :page_with_curl: **DESCRIPTION** 
 ---

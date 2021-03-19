@@ -29,7 +29,7 @@ type Config struct {
 }
 
 const (
-	programVs   string = "V 0.0.1"
+	programVs   string = "V 0.0.2"
 	programID   string = "eu.git.iglou.adrien.inadl"
 	programName string = "INA video backup"
 	programBy   string = "Open-source software by Iglou.eu"
