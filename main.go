@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -270,7 +271,13 @@ func main() {
 }
 
 func (c Config) fileName() string {
-	var ext string
+	var name, ext string
+
+	for _, v := range []rune(c.name) {
+		if v == ' ' || v == '\'' || unicode.IsLetter(v) || unicode.IsNumber(v) {
+			name = fmt.Sprintf("%s%c", name, v)
+		}
+	}
 
 	s := strings.Split(c.url, ".")
 	l := len(s)
@@ -281,7 +288,7 @@ func (c Config) fileName() string {
 		ext = "mp4"
 	}
 
-	return fmt.Sprintf("%s.%s", c.name, ext)
+	return fmt.Sprintf("%s.%s", name, ext)
 }
 
 func download(name, url, path string) error {
